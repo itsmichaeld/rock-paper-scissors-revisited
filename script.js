@@ -1,55 +1,82 @@
-// Button to srtat the game
-const startBtn = document.querySelector(".start-game");
+const rockBtn = document.querySelector(".rock-btn");
+const paperBtn = document.querySelector(".paper-btn");
+const scissorsBtn = document.querySelector(".scissors-btn");
+const resultsText = document.querySelector(".results-text");
+const scoreBoard = document.querySelector(".score-board");
+const resetBtn = document.querySelector(".reset-btn");
 
-// Array of choices
 const choices = ["rock", "paper", "scissors"];
 let playerCounter = 0;
 let computerCounter = 0;
-const winningScore = 2;
+const winningScore = 5;
 
-startBtn.addEventListener("click", function () {
-  //Ask for player choice
-  let playerSelection = prompt("Rock, paper or scissors?").toLowerCase();
-  console.log(playerSelection);
+//Function to update score text
+function updateScore() {
+  scoreBoard.textContent = `Player: ${playerCounter} : Computer: ${computerCounter}`;
+}
 
+//function to disable game buttons after either payer wins, requires game reset to enable buttons
+function disableGameBtns() {
+  if (playerCounter == winningScore || computerCounter == winningScore) {
+    rockBtn.disabled = true;
+    paperBtn.disabled = true;
+    scissorsBtn.disabled = true;
+  } else {
+    rockBtn.disabled = false;
+    paperBtn.disabled = false;
+    scissorsBtn.disabled = false;
+  }
+}
+
+function playRound(choice) {
   // Create random computer choice
-  let computerSelection = choices[Math.floor(Math.random() * choices.length)];
-  console.log(computerSelection);
+  let compChoice = choices[Math.floor(Math.random() * choices.length)];
 
   // If/else logic to decide winner and return the result in the console
-  if (playerSelection === computerSelection) {
-    console.log(
-      `It's a draw. Try again. The current score is Player: ${playerCounter} to Computer ${computerCounter}.`
-    );
+
+  //Logic for draw
+  if (choice === compChoice) {
+    updateScore();
+    resultsText.textContent = `You chose ${choice}. The computer chose ${compChoice}. It's a draw.`;
+    //Logic for computer winning scenario
   } else if (
-    (playerSelection == "rock" && computerSelection == "paper") ||
-    (playerSelection == "paper" && computerSelection == "scissors") ||
-    (playerSelection == "scissors" && computerSelection == "rock")
+    (choice == "rock" && compChoice == "paper") ||
+    (choice == "paper" && compChoice == "scissors") ||
+    (choice == "scissors" && compChoice == "rock")
   ) {
     computerCounter++;
+    updateScore();
     if (computerCounter === winningScore) {
-      console.log(
-        `The computer wins this game by ${computerCounter} to ${playerCounter}`
-      );
-      playerCounter = 0;
-      computerCounter = 0;
+      resultsText.textContent = `The computer wins this game by ${computerCounter} to ${playerCounter}`;
+      disableGameBtns();
     } else {
-      console.log(
-        `The computer wins this time. The score is ${playerCounter} to the player and ${computerCounter} to the computer.`
-      );
+      resultsText.textContent = `The computer wins this time.`;
     }
+    //Player winning scenario
   } else {
     playerCounter++;
+    updateScore();
     if (playerCounter === winningScore) {
-      console.log(`You win ${playerCounter} to ${computerCounter}`);
-      playerCounter = 0;
-      computerCounter = 0;
+      resultsText.textContent = `You win ${playerCounter} to ${computerCounter}`;
+      disableGameBtns();
     } else {
-      console.log(
-        `You win this time. The score is ${playerCounter} to the player and ${computerCounter} to the computer.`
-      );
+      resultsText.textContent = `You win this time.`;
     }
   }
-});
+}
 
-// Didn't fully read the instructions before i dived in so it is a bit different to how it is supposed to be. I'm really happy with it though. It works well.
+//Function to reset game, enable buttons, reset scores and text
+function resetGame() {
+  playerCounter = 0;
+  computerCounter = 0;
+  scoreBoard.textContent = `Player: ${playerCounter} : Computer: ${computerCounter}`;
+  resultsText.textContent = ``;
+  rockBtn.disabled = false;
+  paperBtn.disabled = false;
+  scissorsBtn.disabled = false;
+}
+
+rockBtn.addEventListener("click", () => playRound("rock"));
+paperBtn.addEventListener("click", () => playRound("paper"));
+scissorsBtn.addEventListener("click", () => playRound("scissors"));
+resetBtn.addEventListener("click", () => resetGame());
